@@ -102,8 +102,11 @@ class IosAppPriceProvider: AppPriceProvider {
     func buyApp(completionHandler: @escaping (KotlinBoolean?, (any Error)?) -> Void) {
         Task {
             do {
-                let product = try await Product.products(for: ["01"]).first
-                let result = try await product!.purchase()
+                guard let product = try await Product.products(for: ["01"]).first else {
+                    completionHandler(false, nil)
+                    return
+                }
+                let result = try await product.purchase()
                 switch result {
                 case .success(let verificationResult):
                     switch verificationResult {
